@@ -1,0 +1,70 @@
+;
+;Routine:       handle_to_file.dbl
+;
+;Description:   Saves the content of a memory hadlet to a file
+;
+;Author:        Steve Ives (Synergex Professional Services Group)
+;                
+;Date:          10th June 2005
+;
+;Availability:  All platforms
+;
+;Version:       8.3 for use with xfServerPlus binary parameters
+;               8.1 for general use in loading and unloading file data to and
+;               from memory handles.
+;
+;Disclaimer:    This code is provided "as is" and without guarantee or warranty
+;               of any kind.  You may use the code freely, so long as this code
+;               header and disclaimer remains unchanged. In doing so you accept
+;               that neither the author or Synergex accept any responsibility
+;               for any damage or loss which may result from the use of the code.
+;                
+.function handle_to_file ,^VAL
+
+	a_mh		,n		;Memory handle (IN)
+	a_file		,a		;File name to load (IN)
+
+stack record ivars
+	retval		,i4
+	ch			,i4
+	blocks		,i4
+	chars		,i4
+	count		,i4
+	remaining	,i4
+
+structure block
+				,a32768
+
+stack record avars
+	buf			,a^size(block)
+
+.proc
+
+	clear ^i(ivars), avars
+
+	open(ch=%syn_freechn,o,a_file) [ERR=nf]
+
+	if 0
+nf, 	retval=1
+
+	if (!retval)
+	begin
+		chars = %mem_proc(DM_GETSIZE,a_mh)
+		blocks = chars / ^size(block)
+
+		for count from 1 thru blocks
+			puts(ch,^m(block[count],a_mh))
+
+		remaining = chars - (blocks*^size(block))
+
+		if (remaining)
+			puts(ch,^m(block[count](1:remaining),a_mh))
+	end
+
+	if (retval!=1)
+		close ch
+
+	freturn retval
+
+.end
+

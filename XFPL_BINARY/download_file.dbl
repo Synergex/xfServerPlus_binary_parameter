@@ -1,0 +1,39 @@
+;
+;Routine:       download_file.dbl
+;
+;Description:   Synergy method - downloads a file to a client 
+;
+;Author:        Steve Ives (Synergex Professional Services Group)
+;                
+;Date:          10th June 2005
+;
+;Availability:  All platforms
+;
+;Version:       8.3 for use with xfServerPlus binary parameters
+;               8.1 for general use in loading and unloading file data to and
+;               from memory handles.
+;
+;Disclaimer:    This code is provided "as is" and without guarantee or warranty
+;               of any kind.  You may use the code freely, so long as this code
+;               header and disclaimer remains unchanged. In doing so you accept
+;               that neither the author or Synergex accept any responsibility
+;               for any damage or loss which may result from the use of the code.
+;                
+.function download_file ,^val
+
+	a_file		,a		;File name to load (IN)
+	a_mh		,n		;Memory handle (IN/OUT)
+
+stack record ivars
+	retval		,i4
+
+.proc
+
+	clear ^i(ivars)
+
+	retval = %file_to_handle(a_file,a_mh)
+		
+	freturn retval
+
+.end
+

@@ -1,0 +1,59 @@
+;
+;Routine:       test.dbl
+;
+;Description:   Tests file_to_handle and handle_to_file routines
+;
+;Author:        Steve Ives (Synergex Professional Services Group)
+;                
+;Date:          10th June 2005
+;
+;Availability:  All platforms
+;
+;Version:       8.3 for use with xfServerPlus binary parameters
+;               8.1 for general use in loading and unloading file data to and
+;               from memory handles.
+;
+;Disclaimer:    This code is provided "as is" and without guarantee or warranty
+;               of any kind.  You may use the code freely, so long as this code
+;               header and disclaimer remains unchanged. In doing so you accept
+;               that neither the author or Synergex accept any responsibility
+;               for any damage or loss which may result from the use of the code.
+;                
+.main test
+
+record
+	tt		,i4
+	mh		,i4
+
+.proc
+
+	open(tt=%syn_freechn,i,'tt:')
+	xcall flags(7004020,1)
+
+	xcall delet("spc2005_new.jpg")
+
+	writes(tt,"Copying spc2005.jpg to spc2005_new.jpg")
+
+	mh = %mem_proc(DM_ALLOC,1)
+
+	if (%file_to_handle("spc2005.jpg",mh)) then
+		writes(tt,"FILE_TO_HANDLE failed")
+	else
+	begin
+		if (%handle_to_file(mh,"spc2005_new.jpg")) then
+			writes(tt,"HANDLE_TO_FILE failed")
+		else
+			writes(tt,"File copied OK")
+	end
+
+	mh = %mem_proc(DM_FREE,mh)
+
+	close tt
+	sleep 2
+	stop
+
+.end
+
+.include "file_to_handle.dbl"
+.include "handle_to_file.dbl"
+
